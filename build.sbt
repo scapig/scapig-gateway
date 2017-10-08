@@ -7,8 +7,6 @@ name := "tapi-gateway"
 
 version := "1.0"
 
-lazy val `tapi_api_definition` = (project in file(".")).enablePlugins(PlayScala)
-
 resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 
 resolvers += "Akka Snapshot Repository" at "http://repo.akka.io/snapshots/"
@@ -21,7 +19,7 @@ libraryDependencies += "com.typesafe.play" %% "play-json-joda" % "2.6.0"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
 libraryDependencies += "org.mockito" % "mockito-all" % "1.10.19" % "test"
-libraryDependencies += "com.github.tomakehurst" % "wiremock" % "2.8.0" % "component"
+libraryDependencies += "com.github.tomakehurst" % "wiremock-standalone" % "2.8.0" % "it, component"
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.1" % "component"
 libraryDependencies += "org.scalaj" %% "scalaj-http" % "2.3.0" % "component"
 

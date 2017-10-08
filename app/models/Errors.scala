@@ -16,3 +16,7 @@ sealed abstract class ErrorResponse(
 case class ErrorInvalidRequest(errorMessage: String) extends ErrorResponse(BAD_REQUEST, "INVALID_REQUEST", errorMessage)
 case class ErrorInternalServerError(errorMessage: String) extends ErrorResponse(INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", errorMessage)
 case class ErrorNotFound() extends ErrorResponse(NOT_FOUND, "NOT_FOUND", "The resource could not be found.")
+
+case class ApiDefinitionNotFoundException() extends Exception
+case class DelegatedAuthorityNotFoundException() extends Exception
+case class ApplicationNotFoundException() extends Exception

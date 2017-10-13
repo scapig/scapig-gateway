@@ -1,7 +1,9 @@
 package models
 
-import org.joda.time.DateTime
+import org.joda.time.format.ISODateTimeFormat
+import org.joda.time.{DateTime, LocalDate, LocalDateTime, LocalTime}
 import play.api.libs.json._
+import repository.RateLimitCounter
 
 object JsonFormatters {
   val datePattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
@@ -25,6 +27,8 @@ object JsonFormatters {
   implicit val formatDelegatedAuthority = Json.format[DelegatedAuthority]
 
   implicit val formatApplication = Json.format[Application]
+
+  implicit val formatRateLimitCounter = Json.format[RateLimitCounter]
 
   implicit val errorResponseWrites = new Writes[ErrorResponse] {
     def writes(e: ErrorResponse): JsValue = Json.obj("code" -> e.errorCode, "message" -> e.message)

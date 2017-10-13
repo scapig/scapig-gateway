@@ -21,6 +21,7 @@ class ApplicationConnectorSpec extends UnitSpec with BeforeAndAfterAll with Befo
   val serverToken = "serverToken"
   val clientId = "clientId"
   val application = Application(Some(RateLimitTier.SILVER), UUID.randomUUID())
+  val api = ApiIdentifier("context", "version")
 
   val playApplication = new GuiceApplicationBuilder()
     .configure("services.application.port" -> "7001")
@@ -99,6 +100,34 @@ class ApplicationConnectorSpec extends UnitSpec with BeforeAndAfterAll with Befo
         .withStatus(Status.INTERNAL_SERVER_ERROR)))
 
       intercept[RuntimeException]{await(applicationConnector.fetchByClientId(clientId))}
+    }
+  }
+
+  "validateSubscription" should {
+    "return HasSucceeded when the application is subscribed to the API" in new Setup {
+
+      stubFor(get(s"/application/${application.id}/${api.context}/${api.version}").willReturn(aResponse()
+        .withStatus(Status.NO_CONTENT)))
+
+      val result = await(applicationConnector.validateSubscription(application.id.toString, api.context, api.version))
+
+      result shouldBe HasSucceeded
+    }
+
+    "fail with SubscriptionNotFound when the application is not subscribed to the API" in new Setup {
+
+      stubFor(get(s"/application/${application.id}/${api.context}/${api.version}").willReturn(aResponse()
+        .withStatus(Status.NOT_FOUND)))
+
+      intercept[SubscriptionNotFoundException]{await(applicationConnector.validateSubscription(application.id.toString, api.context, api.version))}
+    }
+
+    "throw an exception when error" in new Setup {
+
+      stubFor(get(s"/application/${application.id}/${api.context}/${api.version}").willReturn(aResponse()
+        .withStatus(Status.INTERNAL_SERVER_ERROR)))
+
+      intercept[RuntimeException]{await(applicationConnector.validateSubscription(application.id.toString, api.context, api.version))}
     }
   }
 

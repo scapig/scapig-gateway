@@ -20,3 +20,7 @@ case class ErrorNotFound() extends ErrorResponse(NOT_FOUND, "NOT_FOUND", "The re
 case class ApiDefinitionNotFoundException() extends Exception
 case class DelegatedAuthorityNotFoundException() extends Exception
 case class ApplicationNotFoundException() extends Exception
+case class SubscriptionNotFoundException() extends Exception
+
+trait HasSucceeded
+object HasSucceeded extends HasSucceeded

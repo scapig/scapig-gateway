@@ -20,7 +20,7 @@ class ApplicationConnectorSpec extends UnitSpec with BeforeAndAfterAll with Befo
 
   val serverToken = "serverToken"
   val clientId = "clientId"
-  val application = Application(Some(RateLimitTier.SILVER), UUID.randomUUID())
+  val application = EnvironmentApplication(UUID.randomUUID(), clientId, RateLimitTier.SILVER)
   val api = ApiIdentifier("context", "version")
 
   val playApplication = new GuiceApplicationBuilder()
@@ -109,7 +109,7 @@ class ApplicationConnectorSpec extends UnitSpec with BeforeAndAfterAll with Befo
       stubFor(get(s"/application/${application.id}/${api.context}/${api.version}").willReturn(aResponse()
         .withStatus(Status.NO_CONTENT)))
 
-      val result = await(applicationConnector.validateSubscription(application.id.toString, api.context, api.version))
+      val result = await(applicationConnector.validateSubscription(application.id.toString, api))
 
       result shouldBe HasSucceeded
     }
@@ -119,7 +119,7 @@ class ApplicationConnectorSpec extends UnitSpec with BeforeAndAfterAll with Befo
       stubFor(get(s"/application/${application.id}/${api.context}/${api.version}").willReturn(aResponse()
         .withStatus(Status.NOT_FOUND)))
 
-      intercept[SubscriptionNotFoundException]{await(applicationConnector.validateSubscription(application.id.toString, api.context, api.version))}
+      intercept[SubscriptionNotFoundException]{await(applicationConnector.validateSubscription(application.id.toString, api))}
     }
 
     "throw an exception when error" in new Setup {
@@ -127,7 +127,7 @@ class ApplicationConnectorSpec extends UnitSpec with BeforeAndAfterAll with Befo
       stubFor(get(s"/application/${application.id}/${api.context}/${api.version}").willReturn(aResponse()
         .withStatus(Status.INTERNAL_SERVER_ERROR)))
 
-      intercept[RuntimeException]{await(applicationConnector.validateSubscription(application.id.toString, api.context, api.version))}
+      intercept[RuntimeException]{await(applicationConnector.validateSubscription(application.id.toString, api))}
     }
   }
 

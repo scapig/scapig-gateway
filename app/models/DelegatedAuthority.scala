@@ -3,7 +3,7 @@ package models
 import org.joda.time.DateTime
 
 
-case class DelegatedAuthority(clientId: String, userId: String, environment: Environment.Environment, expiresAt: DateTime, token: Token)
+case class DelegatedAuthority(clientId: String, userId: String, environment: Environment.Environment, token: Token)
 
 case class Token(expiresAt: DateTime,
                  scopes: Set[String])

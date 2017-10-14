@@ -12,6 +12,13 @@ object JsonFormatters {
   implicit val dateWrite: Writes[DateTime] = JodaWrites.jodaDateWrites(datePattern)
   implicit val dateFormat: Format[DateTime] = Format[DateTime](dateRead, dateWrite)
 
+  implicit val gatewayErrorWrites = Writes[GatewayError] { gatewayError =>
+    JsObject(Seq(
+      "code" -> JsString(gatewayError.code),
+      "message" -> JsString(gatewayError.message)
+    ))
+  }
+
   implicit val formatAPIStatus = EnumJson.enumFormat(APIStatus)
   implicit val formatAuthType = EnumJson.enumFormat(AuthType)
   implicit val formatHttpMethod = EnumJson.enumFormat(HttpMethod)

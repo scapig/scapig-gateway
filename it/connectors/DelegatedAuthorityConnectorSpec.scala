@@ -18,7 +18,7 @@ class DelegatedAuthorityConnectorSpec extends UnitSpec with BeforeAndAfterAll wi
 
   val accessToken = "accessToken"
   val token = Token(DateTime.now().plusHours(4), Set("scope1"))
-  val delegatedAuthority = DelegatedAuthority("clientId", "userId", Environment.PRODUCTION, DateTime.now(), token)
+  val delegatedAuthority = DelegatedAuthority("clientId", "userId", Environment.PRODUCTION, token)
 
   val playApplication = new GuiceApplicationBuilder()
     .configure("services.delegated-authority.port" -> "7001")

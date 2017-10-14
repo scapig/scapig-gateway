@@ -16,9 +16,9 @@ class ApiDefinitionConnectorSpec extends UnitSpec with BeforeAndAfterAll with Be
   val port = 7001
 
   val apiContext = "calendar"
-  val apiEndpoint = Endpoint("/today", "Get Today's Date", HttpMethod.GET, AuthType.NONE)
+  val apiEndpoint = Endpoint("/today", HttpMethod.GET, AuthType.NONE)
   val apiVersion = APIVersion("1.0", APIStatus.PROTOTYPED, Seq(apiEndpoint))
-  val apiDefinition = ApiDefinition(apiContext, "/", "Calendar API", "My Calendar API", "calendar", Seq(apiVersion))
+  val apiDefinition = ApiDefinition("calendar-service", "calendar", Seq(apiVersion))
 
   val playApplication = new GuiceApplicationBuilder()
     .configure("services.api-definition.port" -> "7001")

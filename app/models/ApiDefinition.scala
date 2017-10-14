@@ -3,9 +3,6 @@ package models
 case class ApiDefinition(
                           serviceName: String,
                           serviceBaseUrl: String,
-                          name: String,
-                          description: String,
-                          context: String,
                           versions: Seq[APIVersion])
 
 case class APIVersion(
@@ -15,7 +12,6 @@ case class APIVersion(
 
 case class Endpoint(
                      uriPattern: String,
-                     endpointName: String,
                      method: HttpMethod.Value,
                      authType: AuthType.Value,
                      scope: Option[String] = None,

@@ -10,8 +10,8 @@ import scala.util.matching.Regex
 
 object ProxyRequestUtils {
 
-  private val parseContext = firstGroup("""\/([^\/]*).*""".r)
-  private val parseVersion = firstGroup("""application\/vnd\.(.*)\.(.*)\+.*""".r)
+  private val parseContext = group("""\/([^\/]*).*""".r, 1)
+  private val parseVersion = group("""application\/vnd\.([A-Za-z]*)\.(.*)\+.*""".r, 2)
   private val defaultVersion = "1.0"
 
   def validateContext[T](proxyRequest: ProxyRequest): Future[String] =
@@ -25,8 +25,8 @@ object ProxyRequestUtils {
   private def validateOrElse(maybeString: Option[String], throwable: Throwable): Future[String] =
     maybeString map successful getOrElse failed(throwable)
 
-  private def firstGroup(regex: Regex) = { value: String =>
-    regex.unapplySeq(value) flatMap (_.headOption)
+  private def group(regex: Regex, groupNumber: Int) = { value: String =>
+    regex.unapplySeq(value) flatMap (s => s.lift(groupNumber - 1))
   }
 
 }

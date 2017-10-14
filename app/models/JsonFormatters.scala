@@ -26,7 +26,7 @@ object JsonFormatters {
   implicit val formatToken = Json.format[Token]
   implicit val formatDelegatedAuthority = Json.format[DelegatedAuthority]
 
-  implicit val formatApplication = Json.format[Application]
+  implicit val formatEnvironmentApplication = Json.format[EnvironmentApplication]
 
   implicit val formatRateLimitCounter = Json.format[RateLimitCounter]
 

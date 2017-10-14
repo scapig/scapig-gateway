@@ -15,5 +15,8 @@ class AppContext @Inject()(configuration: Configuration) {
   }
 
   lazy val requestTimeoutInMilliseconds: Int = configuration.get[Int]("requestTimeoutInMilliseconds")
+  lazy val rateLimitGold: Int =  configuration.get[Int]("rateLimit.gold")
+  lazy val rateLimitSilver: Int =  configuration.get[Int]("rateLimit.silver")
+  lazy val rateLimitBronze: Int =  configuration.get[Int]("rateLimit.bronze")
 }
 

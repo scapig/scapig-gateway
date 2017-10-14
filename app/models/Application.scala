@@ -2,8 +2,10 @@ package models
 
 import java.util.UUID
 
-case class Application(rateLimitTier: Option[RateLimitTier.Value],
-                       id: UUID)
+case class EnvironmentApplication(id: UUID,
+                                  clientId: String,
+                                  rateLimitTier: RateLimitTier.Value
+                                  )
 
 object RateLimitTier extends Enumeration {
   type RateLimitTier = Value

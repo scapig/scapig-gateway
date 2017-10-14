@@ -3,7 +3,7 @@ package connectors
 import javax.inject.Inject
 
 import config.AppContext
-import models.{ApiDefinition, ApiDefinitionNotFoundException, DelegatedAuthority, DelegatedAuthorityNotFoundException}
+import models.{DelegatedAuthority, DelegatedAuthorityNotFoundException}
 import play.api.libs.json.Json
 import play.api.libs.ws.{WSClient, WSResponse}
 import scala.concurrent.ExecutionContext.Implicits.global

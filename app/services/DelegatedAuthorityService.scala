@@ -14,7 +14,7 @@ import scala.concurrent.Future
 @Singleton
 class DelegatedAuthorityService @Inject()(delegatedAuthorityConnector: DelegatedAuthorityConnector) {
 
-  def findAuthority(request: Request[AnyContent], accessToken: String, apiRequest: ApiRequest): Future[DelegatedAuthority] = {
+  def fetchDelegatedAuthority(request: Request[AnyContent], accessToken: String, apiRequest: ApiRequest): Future[DelegatedAuthority] = {
 
     def hasExpired(delegatedAuthority: DelegatedAuthority) = delegatedAuthority.token.expiresAt.isBefore(now)
 

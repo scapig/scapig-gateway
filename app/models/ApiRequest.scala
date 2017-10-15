@@ -9,7 +9,7 @@ case class ApiRequest(apiIdentifier: ApiIdentifier,
                       authType: AuthType,
                       apiEndpoint: String,
                       scope: Option[String] = None,
-                      userOid: Option[String] = None,
+                      userId: Option[String] = None,
                       clientId: Option[String] = None,
                       requestId: UUID = UUID.randomUUID())
 

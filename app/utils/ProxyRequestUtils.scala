@@ -1,6 +1,6 @@
 package utils
 
-import models.GatewayError.NotFound
+import models.GatewayError.ApiNotFound
 import models.ProxyRequest
 import play.api.http.HeaderNames
 
@@ -15,7 +15,7 @@ object ProxyRequestUtils {
   private val defaultVersion = "1.0"
 
   def validateContext[T](proxyRequest: ProxyRequest): Future[String] =
-    validateOrElse(parseContext(proxyRequest.rawPath), NotFound())
+    validateOrElse(parseContext(proxyRequest.rawPath), ApiNotFound())
 
   def parseVersion[T](proxyRequest: ProxyRequest): Future[String] = {
     val acceptHeader: String = proxyRequest.getHeader(HeaderNames.ACCEPT).getOrElse("")

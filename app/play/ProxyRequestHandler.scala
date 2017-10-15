@@ -22,7 +22,6 @@ class ProxyRequestHandler @Inject()
   }
 
   override def routeRequest(requestHeader: RequestHeader): Option[Handler] = {
-    implicit val requestId = UUID.randomUUID().toString
-    Some(proxyController.proxy)
+    Some(proxyController.proxy())
   }
 }

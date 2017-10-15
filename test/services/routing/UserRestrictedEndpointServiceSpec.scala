@@ -39,47 +39,24 @@ class UserRestrictedEndpointServiceSpec extends UnitSpec with MockitoSugar with 
 
   "routeRequest" should {
 
-    "fail without a valid access token" in new Setup {
-      val mockApiRequest = mock[ApiRequest]
-      mockAuthority(delegatedAuthorityService, MissingCredentials(mock[Request[AnyContent]], mockApiRequest))
+    "fail with MissingCredentials when the accessToken is missing" in new Setup {
+      val request = fakeRequest.withHeaders(HeaderNames.AUTHORIZATION -> "")
 
       intercept[MissingCredentials] {
-        await(userRestrictedEndpointService.routeRequest(fakeRequest, ProxyRequest(fakeRequest), apiRequest))
+        await(userRestrictedEndpointService.routeRequest(request, ProxyRequest(request), apiRequest))
       }
     }
 
-    "decline a request not matching a delegated authority" in new Setup {
+    "fail with InvalidCredentials when the accessToken is invalid" in new Setup {
       val mockApiRequest = mock[ApiRequest]
-      mockAuthority(delegatedAuthorityService, InvalidCredentials(mock[Request[AnyContent]], mockApiRequest))
+      mockAuthority(delegatedAuthorityService, DelegatedAuthorityNotFoundException())
 
       val caught = intercept[InvalidCredentials] {
         await(userRestrictedEndpointService.routeRequest(fakeRequest, ProxyRequest(fakeRequest), apiRequest))
       }
     }
 
-    "decline a request with a valid server token" in new Setup {
-      val serverToken = "serverToken"
-      val request = fakeRequest.withHeaders(HeaderNames.AUTHORIZATION -> serverToken)
-
-      mockAuthority(delegatedAuthorityService, DelegatedAuthorityNotFoundException())
-      mockApplicationByServerToken(applicationService, serverToken, application)
-
-      intercept[IncorrectAccessTokenType] {
-        await(userRestrictedEndpointService.routeRequest(request, ProxyRequest(request), apiRequest))
-      }
-    }
-
-    "propagate the error, when there is a failure in fetching the application" in new Setup {
-      mockAuthority(delegatedAuthorityService, validAuthority())
-      mockScopeValidation(scopeValidator)
-      mockApplicationByClientId(applicationService, clientId, ServerError())
-
-      intercept[ServerError] {
-        await(userRestrictedEndpointService.routeRequest(fakeRequest, ProxyRequest(fakeRequest), apiRequest))
-      }
-    }
-
-    "decline a request not matching the application API subscriptions" in new Setup {
+    "fail with InvalidSubscription when the application is not subscribed to the API" in new Setup {
       mockAuthority(delegatedAuthorityService, validAuthority())
       mockScopeValidation(scopeValidator)
       mockApplicationByClientId(applicationService, clientId, application)
@@ -90,7 +67,7 @@ class UserRestrictedEndpointServiceSpec extends UnitSpec with MockitoSugar with 
       }
     }
 
-    "decline a request not matching scopes" in new Setup {
+    "fail with InvalidScope when the delegatedAuthority does not have the required scopes" in new Setup {
       mockAuthority(delegatedAuthorityService, validAuthority())
       mockApplicationByClientId(applicationService, clientId, application)
       mockValidateSubscriptionAndRateLimit(applicationService, application, successful(()))
@@ -101,7 +78,7 @@ class UserRestrictedEndpointServiceSpec extends UnitSpec with MockitoSugar with 
       }
     }
 
-    "propagate the error, when the application has reached its rate limit" in new Setup {
+    "fail with ThrottledOut when the application has reached his rate limit" in new Setup {
       mockAuthority(delegatedAuthorityService, validAuthority())
       mockScopeValidation(scopeValidator)
       mockApplicationByClientId(applicationService, clientId, application)
@@ -119,7 +96,7 @@ class UserRestrictedEndpointServiceSpec extends UnitSpec with MockitoSugar with 
       mockValidateSubscriptionAndRateLimit(applicationService, application, successful(()))
 
       val expectedResult = apiRequest.copy(
-        userOid = Some("userOID"),
+        userId = Some("userId"),
         clientId = Some("clientId")
       )
 

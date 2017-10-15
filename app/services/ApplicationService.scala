@@ -4,8 +4,8 @@ import javax.inject.{Inject, Singleton}
 
 import config.AppContext
 import connectors.ApplicationConnector
-import models.{ApiIdentifier, EnvironmentApplication, RateLimitTier}
-import models.GatewayError.{NotFound, ServerError}
+import models.{ApiIdentifier, ApplicationNotFoundException, EnvironmentApplication, RateLimitTier}
+import models.GatewayError.ServerError
 import play.api.Logger
 import repository.RateLimitRepository
 
@@ -22,11 +22,7 @@ class ApplicationService @Inject()(applicationConnector: ApplicationConnector,
   }
 
   def getByClientId(clientId: String): Future[EnvironmentApplication] = {
-    applicationConnector.fetchByClientId(clientId) recover {
-      case e: NotFound =>
-        Logger.error(s"No application found for the client id: $clientId")
-        throw ServerError()
-    }
+    applicationConnector.fetchByClientId(clientId)
   }
 
   def validateSubscriptionAndRateLimit(application: EnvironmentApplication, requestedApi: ApiIdentifier): Future[Unit] = {

@@ -25,7 +25,7 @@ class RequestAuthorizationIntegrationSpec extends BaseFeatureSpec {
   private val accessToken = "accessToken"
   private val clientId = "clientId"
 
-  private val authority = DelegatedAuthority(clientId, "userOid", Environment.PRODUCTION, Token(now().plusHours(3), Set("scope1")))
+  private val authority = DelegatedAuthority(clientId, "userId", Environment.PRODUCTION, Token(now().plusHours(3), Set("scope1")))
 
   private val applicationId = UUID.randomUUID()
   private val application = EnvironmentApplication(applicationId, "clientId", BRONZE)

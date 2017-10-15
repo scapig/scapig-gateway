@@ -6,6 +6,7 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
+import models.GatewayError.InvalidSubscription
 import models.JsonFormatters._
 import models._
 import org.joda.time.DateTime
@@ -114,12 +115,12 @@ class ApplicationConnectorSpec extends UnitSpec with BeforeAndAfterAll with Befo
       result shouldBe HasSucceeded
     }
 
-    "fail with SubscriptionNotFound when the application is not subscribed to the API" in new Setup {
+    "fail with InvalidSubscription when the application is not subscribed to the API" in new Setup {
 
       stubFor(get(s"/application/${application.id}/subscription/${api.context}/${api.version}").willReturn(aResponse()
         .withStatus(Status.NOT_FOUND)))
 
-      intercept[SubscriptionNotFoundException]{await(applicationConnector.validateSubscription(application.id.toString, api))}
+      intercept[InvalidSubscription]{await(applicationConnector.validateSubscription(application.id.toString, api))}
     }
 
     "throw an exception when error" in new Setup {

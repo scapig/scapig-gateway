@@ -11,8 +11,9 @@ import play.api.http.{HttpChunk, HttpEntity}
 import play.api.libs.json.Json
 import play.api.libs.ws.{WSClient, WSResponse}
 import play.api.mvc._
-import scala.concurrent.ExecutionContext.Implicits.global
+import utils.PlayRequestUtils.replaceHeaders
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationInt
 
@@ -53,13 +54,7 @@ class ProxyConnector @Inject()(appContext: AppContext, wsClient: WSClient) {
     )
   }
 
-  private def replaceHeaders(headers: Headers)(updatedHeaders: (String, Option[String])*): Headers = {
-    updatedHeaders.headOption match {
-      case Some((headerName, Some(headerValue))) => replaceHeaders(headers.replace(headerName -> headerValue))(updatedHeaders.tail:_*)
-      case Some((headerName, None)) => replaceHeaders(headers.remove(headerName))(updatedHeaders.tail:_*)
-      case None => headers
-    }
-  }
+
 
   private def bodyOf(request: Request[AnyContent]): Option[String] = {
     request.body match {

@@ -4,9 +4,9 @@ import java.util.UUID
 
 import config.AppContext
 import connectors.ApplicationConnector
-import models.GatewayError.{InvalidSubscription, NotFound, ServerError, ThrottledOut}
+import models.GatewayError.{InvalidSubscription, ThrottledOut}
 import models.RateLimitTier.SILVER
-import models.{ApiIdentifier, EnvironmentApplication, HasSucceeded, RateLimitTier}
+import models._
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
@@ -36,7 +36,7 @@ class ApplicationServiceSpec extends UnitSpec with MockitoSugar {
     given(appContext.rateLimitSilver).willReturn(silverRateLimit)
   }
 
-  "Get application by server token" should {
+  "getByServerToken" should {
 
     "return the application when an application exists for the given server token" in new Setup {
       when(applicationConnector.fetchByServerToken(serverToken)).thenReturn(successful(application))
@@ -44,15 +44,15 @@ class ApplicationServiceSpec extends UnitSpec with MockitoSugar {
       result shouldBe application
     }
 
-    "propagate the error when the application cannot be fetched for the given server token" in new Setup {
-      when(applicationConnector.fetchByServerToken(serverToken)).thenReturn(failed(NotFound()))
-      intercept[NotFound] {
+    "propagate the ApplicationNotFoundException error when the application cannot be fetched for the given server token" in new Setup {
+      when(applicationConnector.fetchByServerToken(serverToken)).thenReturn(failed(ApplicationNotFoundException()))
+      intercept[ApplicationNotFoundException] {
         await(applicationService.getByServerToken(serverToken))
       }
     }
   }
 
-  "Get application by client id" should {
+  "getByClientId" should {
 
     "return the application when an application exists for the given client id" in new Setup {
       when(applicationConnector.fetchByClientId(clientId)).thenReturn(successful(application))
@@ -60,16 +60,9 @@ class ApplicationServiceSpec extends UnitSpec with MockitoSugar {
       result shouldBe application
     }
 
-    "propagate the error when the application cannot be fetched for the given client id" in new Setup {
+    "propagate the ApplicationNotFoundException error when the application cannot be fetched for the given clientId" in new Setup {
       when(applicationConnector.fetchByClientId(clientId)).thenReturn(failed(new RuntimeException))
       intercept[RuntimeException] {
-        await(applicationService.getByClientId(clientId))
-      }
-    }
-
-    "throw a 'ServerError' when the application is not found" in new Setup {
-      when(applicationConnector.fetchByClientId(clientId)).thenReturn(failed(NotFound()))
-      intercept[ServerError] {
         await(applicationService.getByClientId(clientId))
       }
     }

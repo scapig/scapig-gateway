@@ -1,7 +1,6 @@
 package models
 
-import org.joda.time.format.ISODateTimeFormat
-import org.joda.time.{DateTime, LocalDate, LocalDateTime, LocalTime}
+import org.joda.time.DateTime
 import play.api.libs.json._
 import repository.RateLimitCounter
 
@@ -36,8 +35,4 @@ object JsonFormatters {
   implicit val formatEnvironmentApplication = Json.format[EnvironmentApplication]
 
   implicit val formatRateLimitCounter = Json.format[RateLimitCounter]
-
-  implicit val errorResponseWrites = new Writes[ErrorResponse] {
-    def writes(e: ErrorResponse): JsValue = Json.obj("code" -> e.errorCode, "message" -> e.message)
-  }
 }

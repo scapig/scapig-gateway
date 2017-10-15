@@ -25,7 +25,6 @@ class ProxyServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEac
 
     val proxyConnector = mock[ProxyConnector]
     val underTest = new ProxyService(proxyConnector)
-    val requestId = UUID.randomUUID().toString
   }
 
   "proxy" should {
@@ -35,7 +34,7 @@ class ProxyServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEac
 
       given(proxyConnector.proxy(request, apiRequest)).willReturn(successful(response))
 
-      val result = await(underTest.proxy(request, apiRequest)(requestId))
+      val result = await(underTest.proxy(request, apiRequest))
 
       result shouldBe response
     }

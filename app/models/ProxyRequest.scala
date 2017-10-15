@@ -20,7 +20,7 @@ case class ProxyRequest
 
   def accessToken(request: Request[AnyContent], apiRequest: ApiRequest): Future[String] = {
     getHeader(AUTHORIZATION) map (_.stripPrefix("Bearer ")) match {
-      case Some(bearerToken) => successful(bearerToken)
+      case Some(bearerToken) if bearerToken.trim.nonEmpty => successful(bearerToken)
       case _ => failed(MissingCredentials(request, apiRequest))
     }
   }
@@ -33,7 +33,7 @@ object ProxyRequest {
   def apply(requestHeader: RequestHeader): ProxyRequest = {
     ProxyRequest(
       requestHeader.method,
-      requestHeader.uri.stripPrefix("/api-gateway"),
+      requestHeader.uri.stripPrefix("/tapi-gateway"),
       requestHeader.queryString,
       requestHeader.headers.headers.toMap,
       requestHeader.version)

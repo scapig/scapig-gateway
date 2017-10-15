@@ -11,7 +11,7 @@ import scala.concurrent.Future
 @Singleton
 class ProxyService @Inject()(proxyConnector: ProxyConnector) {
 
-  def proxy(request: Request[AnyContent], apiRequest: ApiRequest)(implicit requestId: String): Future[Result] = {
+  def proxy(request: Request[AnyContent], apiRequest: ApiRequest): Future[Result] = {
     proxyConnector.proxy(request, apiRequest)
   }
 

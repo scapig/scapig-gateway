@@ -1,6 +1,6 @@
 package services.routing
 
-import models.GatewayError.{MatchingResourceNotFound, ServerError}
+import models.GatewayError.{InvalidCredentials, InvalidSubscription, MatchingResourceNotFound, ServerError}
 import models.{ApiIdentifier, ApiRequest, AuthType, ProxyRequest}
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -61,9 +61,9 @@ class RoutingServiceSpec extends UnitSpec with MockitoSugar {
     "decline a user-endpoint request which fails to route" in new Setup {
       when(endpointService.apiRequest(any[ProxyRequest], any[Request[AnyContent]])).thenReturn(successful(userApiRequest))
       when(userRestrictedEndpointService.routeRequest(userRequest, ProxyRequest(userRequest), userApiRequest))
-        .thenReturn(failed(ServerError()))
+        .thenReturn(failed(InvalidSubscription()))
 
-      intercept[ServerError] {
+      intercept[InvalidSubscription] {
         await(routingService.routeRequest(userRequest))
       }
     }
@@ -81,9 +81,9 @@ class RoutingServiceSpec extends UnitSpec with MockitoSugar {
     "decline an application-endpoint request which fails to route" in new Setup {
       when(endpointService.apiRequest(any[ProxyRequest], any[Request[AnyContent]])).thenReturn(successful(applicationApiRequest))
       when(applicationRestrictedEndpointService.routeRequest(applicationRequest, ProxyRequest(applicationRequest), applicationApiRequest))
-        .thenReturn(failed(ServerError()))
+        .thenReturn(failed(InvalidSubscription()))
 
-      intercept[ServerError] {
+      intercept[InvalidSubscription] {
         await(routingService.routeRequest(applicationRequest))
       }
     }

@@ -4,7 +4,7 @@ import java.util.UUID
 
 import connectors.ApiDefinitionConnector
 import models.AuthType.NONE
-import models.GatewayError.{MatchingResourceNotFound, NotFound}
+import models.GatewayError.{ApiNotFound, MatchingResourceNotFound}
 import models.HttpMethod.GET
 import models._
 import org.joda.time.DateTimeUtils
@@ -56,12 +56,12 @@ class EndpointServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfter
       apiRequest(actualApiRequest.requestId) shouldBe actualApiRequest
     }
 
-    "fail with NotFound when no version matches the Accept headers in the API Definition" in {
+    "fail with ApiNotFound when no version matches the Accept headers in the API Definition" in {
       val notFoundRequest = request.withHeaders(ACCEPT -> "application/vnd.mybusiness.55.0+json")
 
       mockApiServiceConnectorToReturnSuccess
 
-      intercept[NotFound]{
+      intercept[ApiNotFound]{
         await(endpointService.apiRequest(ProxyRequest(notFoundRequest), notFoundRequest))
       }
     }
@@ -107,24 +107,7 @@ class EndpointServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfter
 
       mockApiServiceConnectorToReturn("api-context", successful(anApiDefinition))
 
-      val beforeTimeNanos = System.nanoTime()
       val actualApiRequest = await(endpointService.apiRequest(ProxyRequest(requestWithQueryString), requestWithQueryString))
-      val afterTimeNanos = System.nanoTime()
-
-      apiRequest(actualApiRequest.requestId, urlWithQueryString) shouldBe actualApiRequest
-    }
-
-    "succeed when at least one required request parameter is in the URL" in {
-
-      val anApiDefinition = ApiDefinition("api-context", "http://host.example", Seq(APIVersion("1.0", APIStatus.PUBLISHED,
-        Seq(Endpoint("/api-endpoint", GET, NONE, queryParameters = Seq(Parameter("requiredParam", required = true),
-          Parameter("anotherRequiredParam", required = true)))))))
-
-      mockApiServiceConnectorToReturn("api-context", successful(anApiDefinition))
-
-      val beforeTimeNanos = System.nanoTime()
-      val actualApiRequest = await(endpointService.apiRequest(ProxyRequest(requestWithQueryString), requestWithQueryString))
-      val afterTimeNanos = System.nanoTime()
 
       apiRequest(actualApiRequest.requestId, urlWithQueryString) shouldBe actualApiRequest
     }

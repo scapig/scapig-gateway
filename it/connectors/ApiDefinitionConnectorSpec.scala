@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
+import models.GatewayError.ApiNotFound
 import models._
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
@@ -54,12 +55,12 @@ class ApiDefinitionConnectorSpec extends UnitSpec with BeforeAndAfterAll with Be
       result shouldBe apiDefinition
     }
 
-    "fail with ApiDefinitionNotFoundException when the context does not match any API" in new Setup {
+    "fail with ApiNotFound when the context does not match any API" in new Setup {
 
       stubFor(get(s"/api-definition?context=$apiContext").willReturn(aResponse()
         .withStatus(Status.NOT_FOUND)))
 
-      intercept[ApiDefinitionNotFoundException]{await(apiDefinitionConnector.fetchByContext(apiContext))}
+      intercept[ApiNotFound]{await(apiDefinitionConnector.fetchByContext(apiContext))}
     }
 
     "throw an exception when error" in new Setup {

@@ -25,10 +25,10 @@ trait RoutingServicesMocks {
   }
 
   protected def mockAuthority(authorityService: DelegatedAuthorityService, exception: Exception) =
-    when(authorityService.findAuthority(any(), any(), any())).thenReturn(failed(exception))
+    when(authorityService.fetchDelegatedAuthority(any(), any(), any())).thenReturn(failed(exception))
 
   protected def mockAuthority(authorityService: DelegatedAuthorityService, authority: DelegatedAuthority) =
-    when(authorityService.findAuthority(any(), any(), any())).thenReturn(successful(authority))
+    when(authorityService.fetchDelegatedAuthority(any(), any(), any())).thenReturn(successful(authority))
 
   protected def mockScopeValidation(scopeValidationFilter: ScopeValidator, gatewayError: GatewayError) =
     when(scopeValidationFilter.validate(any(classOf[DelegatedAuthority]), any(classOf[Option[String]])))
@@ -44,8 +44,8 @@ trait RoutingServicesMocks {
   protected def mockApplicationByClientId(applicationService: ApplicationService, clientId: String, application: EnvironmentApplication) =
     when(applicationService.getByClientId(clientId)).thenReturn(successful(application))
 
-  protected def mockApplicationByServerToken(applicationService: ApplicationService,  serverToken: String, gatewayError: GatewayError) =
-    when(applicationService.getByServerToken(serverToken)).thenReturn(failed(gatewayError))
+  protected def mockApplicationByServerToken(applicationService: ApplicationService,  serverToken: String, exception: Exception) =
+    when(applicationService.getByServerToken(serverToken)).thenReturn(failed(exception))
 
   protected def mockApplicationByServerToken(applicationService: ApplicationService, serverToken: String, application: EnvironmentApplication) =
     when(applicationService.getByServerToken(serverToken)).thenReturn(successful(application))
@@ -58,7 +58,7 @@ trait RoutingServicesMocks {
 
   protected def validAuthority(): DelegatedAuthority = {
     val token = Token(DateTime.now.plusMinutes(5), Set.empty)
-    DelegatedAuthority("clientId", "userOID", Environment.PRODUCTION, token)
+    DelegatedAuthority("clientId", "userId", Environment.PRODUCTION, token)
   }
 
 }

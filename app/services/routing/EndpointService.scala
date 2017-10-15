@@ -3,7 +3,7 @@ package services.routing
 import javax.inject.{Inject, Singleton}
 
 import connectors.ApiDefinitionConnector
-import models.GatewayError.{MatchingResourceNotFound, NotFound}
+import models.GatewayError.{ApiNotFound, MatchingResourceNotFound}
 import models._
 import play.api.Logger
 import play.api.http.HeaderNames
@@ -55,7 +55,7 @@ object EndpointService {
     val apiEndpoint = apiVersion.flatMap(_.endpoints.find(filterEndpoint))
 
     (apiVersion, apiEndpoint) match {
-      case (None, _) => failed(NotFound())
+      case (None, _) => failed(ApiNotFound())
       case (_, None) => failed(MatchingResourceNotFound())
       case (_, Some(endpoint)) => successful(endpoint)
     }

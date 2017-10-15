@@ -1,12 +1,13 @@
-package services
+package services.routing
 
 import models.GatewayError._
-import models.{ApiIdentifier, ApiRequest, AuthType, ProxyRequest}
+import models._
 import org.scalatest.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsJson, Headers}
 import play.api.test.FakeRequest
 import play.mvc.Http.HeaderNames
+import services.{ApplicationService, DelegatedAuthorityService, RoutingServicesMocks}
 import utils.UnitSpec
 
 import scala.concurrent.Future.{failed, successful}
@@ -56,7 +57,7 @@ class ApplicationRestrictedEndpointServiceSpec extends UnitSpec with MockitoSuga
 
     "fail, with a request without a valid access token" in new Setup {
       mockApplicationByServerToken(applicationService, serverToken, NotFound())
-      mockAuthority(delegatedAuthorityService, NotFound())
+      mockAuthority(delegatedAuthorityService, DelegatedAuthorityNotFoundException())
 
       intercept[InvalidCredentials] {
         await(applicationRestrictedEndpointService.routeRequest(applicationRequestWithToken, ProxyRequest(applicationRequestWithToken), apiRequest))

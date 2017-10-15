@@ -1,11 +1,11 @@
-package services
+package services.routing
 
 import javax.inject.{Inject, Singleton}
 
 import models.{ApiRequest, AuthType, ProxyRequest}
 import play.api.mvc.{AnyContent, Request}
-import scala.concurrent.ExecutionContext.Implicits.global
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton

@@ -1,4 +1,4 @@
-package services
+package services.routing
 
 import java.util.UUID
 
@@ -14,8 +14,7 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import play.api.http.HeaderNames.ACCEPT
 import play.api.test.FakeRequest
-import utils.ProxyRequestUtils.{defaultVersion, parseVersion}
-import utils.{ProxyRequestUtils, UnitSpec}
+import utils.UnitSpec
 
 import scala.concurrent.Future
 import scala.concurrent.Future._
@@ -58,7 +57,7 @@ class EndpointServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfter
     }
 
     "fail with NotFound when no version matches the Accept headers in the API Definition" in {
-      val notFoundRequest = request.withHeaders(ACCEPT -> "application/vnd.hmrc.55.0+json")
+      val notFoundRequest = request.withHeaders(ACCEPT -> "application/vnd.mybusiness.55.0+json")
 
       mockApiServiceConnectorToReturnSuccess
 

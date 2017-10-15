@@ -1,4 +1,4 @@
-package services
+package services.routing
 
 import javax.inject.{Inject, Singleton}
 
@@ -8,7 +8,7 @@ import models._
 import play.api.Logger
 import play.api.http.HeaderNames
 import play.api.mvc.{AnyContent, Request}
-import services.EndpointService.{createAndLogApiRequest, findEndpoint}
+import services.routing.EndpointService.{createAndLogApiRequest, findEndpoint}
 import utils.ProxyRequestUtils._
 
 import scala.concurrent.ExecutionContext.Implicits.global

@@ -32,7 +32,7 @@ class ApplicationConnector @Inject()(appContext: AppContext, wsClient: WSClient)
   }
 
   def validateSubscription(appId: String,  api: ApiIdentifier): Future[HasSucceeded] = {
-    wsClient.url(s"$serviceUrl/application/$appId/${api.context}/${api.version}").get() map {
+    wsClient.url(s"$serviceUrl/application/$appId/subscription/${api.context}/${api.version}").get() map {
       case response if response.status == 204 => HasSucceeded
       case response if response.status == 404 => throw SubscriptionNotFoundException()
       case r: WSResponse => throw new RuntimeException(s"Invalid response from application ${r.status} ${r.body}")

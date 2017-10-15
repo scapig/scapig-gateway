@@ -1,4 +1,4 @@
-package services
+package services.routing
 
 import models.GatewayError.{MatchingResourceNotFound, ServerError}
 import models.{ApiIdentifier, ApiRequest, AuthType, ProxyRequest}

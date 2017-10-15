@@ -19,7 +19,6 @@ class RateLimitRepositorySpec extends UnitSpec with BeforeAndAfterEach {
   val underTest = fakeApplication.injector.instanceOf[RateLimitRepository]
 
   override def beforeEach(): Unit = {
-    await(await(underTest.databaseFuture).drop(failIfNotFound = false))
     await(underTest.ensureIndexes())
     setCurrentMillisFixed(1000)
   }

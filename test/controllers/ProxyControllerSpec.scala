@@ -18,9 +18,10 @@ import play.api.libs.json.Json._
 import play.api.mvc.Result
 import play.api.mvc.Results._
 import play.api.test.FakeRequest
-import services.{ProxyService, RoutingService}
+import services.ProxyService
 import utils.{RequestUtils, UnitSpec}
 import models.JsonFormatters._
+import services.routing.RoutingService
 
 import scala.concurrent.Future
 import scala.concurrent.Future.{failed, successful}

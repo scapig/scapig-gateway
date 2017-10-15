@@ -1,13 +1,13 @@
-package services
+package services.routing
 
 import models.GatewayError._
-import models.{ApiIdentifier, ApiRequest, AuthType, ProxyRequest}
-import org.mockito.Mockito
+import models._
 import org.scalatest.mockito.MockitoSugar
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContent, AnyContentAsJson, Headers, Request}
 import play.api.test.FakeRequest
+import services.{ApplicationService, DelegatedAuthorityService, RoutingServicesMocks, ScopeValidator}
 import utils.UnitSpec
 
 import scala.concurrent.Future._
@@ -61,7 +61,7 @@ class UserRestrictedEndpointServiceSpec extends UnitSpec with MockitoSugar with 
       val serverToken = "serverToken"
       val request = fakeRequest.withHeaders(HeaderNames.AUTHORIZATION -> serverToken)
 
-      mockAuthority(delegatedAuthorityService, NotFound())
+      mockAuthority(delegatedAuthorityService, DelegatedAuthorityNotFoundException())
       mockApplicationByServerToken(applicationService, serverToken, application)
 
       intercept[IncorrectAccessTokenType] {

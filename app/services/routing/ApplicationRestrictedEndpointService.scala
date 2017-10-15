@@ -1,14 +1,15 @@
-package services
+package services.routing
 
 import javax.inject.{Inject, Singleton}
 
-import models.{ApiRequest, ProxyRequest}
 import models.GatewayError.{InvalidCredentials, NotFound}
+import models.{ApiRequest, DelegatedAuthorityNotFoundException, ProxyRequest}
 import play.api.Logger
 import play.api.mvc.{AnyContent, Request}
+import services.{ApplicationService, DelegatedAuthorityService}
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 @Singleton
 class ApplicationRestrictedEndpointService @Inject()(authorityService: DelegatedAuthorityService,
@@ -17,9 +18,9 @@ class ApplicationRestrictedEndpointService @Inject()(authorityService: Delegated
   def routeRequest(request: Request[AnyContent], proxyRequest: ProxyRequest, apiRequest: ApiRequest): Future[ApiRequest] = {
 
     def getAuthority(accessToken: String) = {
-      authorityService.findAuthority(request, proxyRequest, apiRequest) recover {
-        case e: NotFound =>
-          Logger.debug("No authority found for the access token")
+      authorityService.findAuthority(request, accessToken, apiRequest) recover {
+        case e: DelegatedAuthorityNotFoundException =>
+          Logger.debug("No valid authority found for the access token")
           throw InvalidCredentials(request, apiRequest)
       }
     }

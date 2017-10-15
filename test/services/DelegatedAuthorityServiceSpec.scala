@@ -23,6 +23,7 @@ class DelegatedAuthorityServiceSpec extends UnitSpec with MockitoSugar {
     headers = Headers(),
     body = AnyContentAsJson(Json.parse("""{}""")))
 
+  private val accessToken = "accessToken"
   private val requestWithToken = request.withHeaders(HeaderNames.AUTHORIZATION -> "Bearer 31c99f9482de49544c6cc3374c378028")
 
   private val apiRequest = ApiRequest(
@@ -35,19 +36,11 @@ class DelegatedAuthorityServiceSpec extends UnitSpec with MockitoSugar {
 
   "findAuthority" should {
 
-    "throw an exception when credentials are missing" in {
-      val requestWithoutHeader = request
+    "throw DelegatedAuthorityNotFoundException exception when credentials have expired" in {
+      mockDelegatedAuthorityConnector(accessToken, authorityWithExpiration(now.minusMinutes(5)))
 
-      intercept[MissingCredentials] {
-        await(authorityService.findAuthority(requestWithoutHeader, ProxyRequest(requestWithoutHeader), apiRequest))
-      }
-    }
-
-    "throw an exception when credentials have expired" in {
-      mockDelegatedAuthorityConnector("31c99f9482de49544c6cc3374c378028", authorityWithExpiration(now.minusMinutes(5)))
-
-      intercept[InvalidCredentials] {
-        await(authorityService.findAuthority(requestWithToken, ProxyRequest(requestWithToken), apiRequest))
+      intercept[DelegatedAuthorityNotFoundException] {
+        await(authorityService.findAuthority(requestWithToken, accessToken, apiRequest))
       }
     }
 
@@ -55,9 +48,9 @@ class DelegatedAuthorityServiceSpec extends UnitSpec with MockitoSugar {
       val inFiveMinutes = now().plusMinutes(5)
       val unexpiredAuthority = authorityWithExpiration(inFiveMinutes)
 
-      mockDelegatedAuthorityConnector("31c99f9482de49544c6cc3374c378028", authorityWithExpiration(inFiveMinutes))
+      mockDelegatedAuthorityConnector(accessToken, authorityWithExpiration(inFiveMinutes))
 
-      await(authorityService.findAuthority(requestWithToken, ProxyRequest(requestWithToken), apiRequest)) shouldBe unexpiredAuthority
+      await(authorityService.findAuthority(requestWithToken, accessToken, apiRequest)) shouldBe unexpiredAuthority
     }
   }
 

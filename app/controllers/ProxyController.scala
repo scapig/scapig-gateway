@@ -11,7 +11,8 @@ import play.api.http.Status.{BAD_GATEWAY, GATEWAY_TIMEOUT, NOT_IMPLEMENTED, SERV
 import play.api.libs.json.Json.toJson
 import play.api.mvc.Results.{NotFound => PlayNotFound, _}
 import play.api.mvc._
-import services.{ProxyService, RoutingService}
+import services.ProxyService
+import services.routing.RoutingService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

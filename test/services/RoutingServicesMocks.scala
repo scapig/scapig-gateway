@@ -24,8 +24,8 @@ trait RoutingServicesMocks {
     randomAuthType.toString
   }
 
-  protected def mockAuthority(authorityService: DelegatedAuthorityService, gatewayError: GatewayError) =
-    when(authorityService.findAuthority(any(), any(), any())).thenReturn(failed(gatewayError))
+  protected def mockAuthority(authorityService: DelegatedAuthorityService, exception: Exception) =
+    when(authorityService.findAuthority(any(), any(), any())).thenReturn(failed(exception))
 
   protected def mockAuthority(authorityService: DelegatedAuthorityService, authority: DelegatedAuthority) =
     when(authorityService.findAuthority(any(), any(), any())).thenReturn(successful(authority))

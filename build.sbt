@@ -1,6 +1,6 @@
 import _root_.play.sbt.PlayImport._
-
 import sbt.Keys._
+import sbt.Tests.{Group, SubProcess}
 import sbt._
 
 name := "tapi-gateway"
@@ -37,8 +37,14 @@ lazy val microservice = (project in file("."))
   .settings(inConfig(ComponentTest)(Defaults.testSettings): _*)
   .settings(
     Keys.fork in ComponentTest := false,
+    testGrouping in ComponentTest := oneForkedJvmPerTest((definedTests in ComponentTest).value),
     unmanagedSourceDirectories in ComponentTest <<= (baseDirectory in ComponentTest) (base => Seq(base / "component"))
   )
 
 lazy val IntTest = config("it") extend Test
 lazy val ComponentTest = config("component") extend Test
+
+def oneForkedJvmPerTest(tests: Seq[TestDefinition]) =
+  tests map {
+    test => Group(test.name, Seq(test), SubProcess(ForkOptions(runJVMOptions = Seq("-Dtest.name=" + test.name))))
+  }

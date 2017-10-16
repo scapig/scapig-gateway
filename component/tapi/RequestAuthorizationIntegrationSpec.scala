@@ -7,12 +7,13 @@ import models._
 import org.joda.time.DateTime.now
 import play.api.http.Status._
 import play.mvc.Http.HeaderNames.{ACCEPT, AUTHORIZATION}
+import tapi.stubs.ApiStub
 
 import scalaj.http.Http
 
 class RequestAuthorizationIntegrationSpec extends BaseFeatureSpec {
 
-  private val anApiDefinition = ApiDefinition("api-simulator", "api-simulator",
+  private val anApiDefinition = ApiDefinition("api-simulator", s"http://localhost:${ApiStub.port}",
     Seq(
       APIVersion("1.0", APIStatus.PUBLISHED, Seq(
         Endpoint("userScope1", HttpMethod.GET, AuthType.USER, scope = Some("scope1")),
@@ -102,8 +103,8 @@ class RequestAuthorizationIntegrationSpec extends BaseFeatureSpec {
       Then("The http response is '401' unauthorized")
       assertCodeIs(httpResponse, UNAUTHORIZED)
 
-      And("The response message code is 'INCORRECT_ACCESS_TOKEN_TYPE'")
-      assertBodyIs(httpResponse, """ {"code":"INCORRECT_ACCESS_TOKEN_TYPE","message":"The access token type used is not supported when invoking the API"} """)
+      And("The response message code is 'INVALID_CREDENTIALS'")
+      assertBodyIs(httpResponse, """ {"code":"INVALID_CREDENTIALS","message":"Invalid Authentication information provided"} """)
     }
 
     scenario("A user restricted request, that fails with a NOT_FOUND when fetching the application by authority, is not proxied") {

@@ -34,7 +34,7 @@ object EndpointService {
     val apiReq = ApiRequest(
       apiIdentifier = ApiIdentifier(context, version),
       authType = apiEndpoint.authType,
-      apiEndpoint = s"${apiDefinition.serviceBaseUrl}/${proxyRequest.path}",
+      apiEndpoint = s"${apiDefinition.serviceBaseUrl}${proxyRequest.path.stripPrefix("/" + context)}",
       scope = apiEndpoint.scope
     )
 

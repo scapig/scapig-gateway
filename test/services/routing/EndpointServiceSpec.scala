@@ -123,8 +123,8 @@ class EndpointServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfter
 
   }
 
-  private val basicUrl = "http://host.example//api-context/api-endpoint"
-  private val urlWithQueryString = "http://host.example//api-context/api-endpoint?requiredParam=value"
+  private val basicUrl = "http://host.example/api-endpoint"
+  private val urlWithQueryString = "http://host.example/api-endpoint?requiredParam=value"
 
   private def apiRequest(id: UUID = UUID.randomUUID(), url: String = basicUrl) = ApiRequest(
     apiIdentifier = ApiIdentifier("api-context", "1.0"),

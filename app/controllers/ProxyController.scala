@@ -12,7 +12,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class ProxyController @Inject()(controllerComponent: ControllerComponents, proxyService: ProxyService, routingService: RoutingService)
   extends AbstractController(controllerComponent){
 
-  def proxy() = Action.async(parse.anyContent) { implicit request =>
+  def proxy() = Action.async { implicit request =>
     routingService.routeRequest(request) flatMap { apiRequest =>
       proxyService.proxy(request, apiRequest)
     }

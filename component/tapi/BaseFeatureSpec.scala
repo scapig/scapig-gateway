@@ -19,6 +19,7 @@ with GuiceOneServerPerSuite with BeforeAndAfterEach {
   override lazy val port = 19111
 
   implicit override lazy val app: Application =  new GuiceApplicationBuilder().configure(
+    "mongodb.uri" -> "mongodb://localhost:27017/tapi-gateway-it",
     "services.api-definition.port" -> ApiDefinitionStub.stub.port,
     "services.application.port" -> ApplicationStub.stub.port,
     "services.delegated-authority.port" -> DelegatedAuthorityStub.stub.port

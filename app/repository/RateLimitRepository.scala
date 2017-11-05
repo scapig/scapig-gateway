@@ -24,7 +24,7 @@ case class RateLimitCounter(clientId: String, minutesSinceEpoch: Long, createdAt
 @Singleton
 class RateLimitRepository @Inject()(val reactiveMongoApi: ReactiveMongoApi) {
 
-  val databaseFuture = reactiveMongoApi.database.map(_.collection[JSONCollection]("rateLimitCounter"))
+  def databaseFuture = reactiveMongoApi.database.map(_.collection[JSONCollection]("rateLimitCounter"))
 
   val indexes = Seq(
     Index(

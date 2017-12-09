@@ -1,4 +1,4 @@
-package tapi
+package scapig
 
 import java.util.UUID
 
@@ -7,7 +7,7 @@ import models._
 import org.joda.time.DateTime.now
 import play.api.http.Status._
 import play.mvc.Http.HeaderNames.{ACCEPT, AUTHORIZATION}
-import tapi.stubs.ApiStub
+import scapig.stubs.ApiStub
 
 import scalaj.http.Http
 

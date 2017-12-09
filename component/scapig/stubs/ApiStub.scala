@@ -1,8 +1,8 @@
-package tapi.stubs
+package scapig.stubs
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import play.api.http.Status.OK
-import tapi.{MockHost, Stub}
+import scapig.{MockHost, Stub}
 
 object ApiStub extends Stub {
 

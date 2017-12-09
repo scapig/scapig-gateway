@@ -1,10 +1,10 @@
-package tapi.stubs
+package scapig.stubs
 
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, equalTo, get, urlPathEqualTo}
 import models.{ApiIdentifier, EnvironmentApplication}
 import play.api.http.Status._
 import play.api.libs.json.Json.{stringify, toJson}
-import tapi.{MockHost, Stub}
+import scapig.{MockHost, Stub}
 import models.JsonFormatters._
 
 object ApplicationStub extends Stub {

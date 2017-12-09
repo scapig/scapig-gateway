@@ -1,4 +1,4 @@
-package tapi
+package scapig
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
@@ -8,7 +8,7 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json._
-import tapi.stubs.{ApiDefinitionStub, ApiStub, ApplicationStub, DelegatedAuthorityStub}
+import scapig.stubs.{ApiDefinitionStub, ApiStub, ApplicationStub, DelegatedAuthorityStub}
 
 import scala.concurrent.duration._
 import scalaj.http.{HttpRequest, HttpResponse}
@@ -19,7 +19,7 @@ with GuiceOneServerPerSuite with BeforeAndAfterEach {
   override lazy val port = 19111
 
   implicit override lazy val app: Application =  new GuiceApplicationBuilder().configure(
-    "mongodb.uri" -> "mongodb://localhost:27017/tapi-gateway-it",
+    "mongodb.uri" -> "mongodb://localhost:27017/scapig-gateway-it",
     "services.api-definition.port" -> ApiDefinitionStub.stub.port,
     "services.application.port" -> ApplicationStub.stub.port,
     "services.delegated-authority.port" -> DelegatedAuthorityStub.stub.port

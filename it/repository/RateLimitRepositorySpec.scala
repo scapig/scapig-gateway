@@ -13,7 +13,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class RateLimitRepositorySpec extends UnitSpec with BeforeAndAfterEach {
 
   lazy val fakeApplication = new GuiceApplicationBuilder()
-    .configure("mongodb.uri" -> "mongodb://localhost:27017/tapi-gateway-test")
+    .configure("mongodb.uri" -> "mongodb://localhost:27017/scapig-gateway-test")
     .build()
 
   val underTest = fakeApplication.injector.instanceOf[RateLimitRepository]

@@ -33,7 +33,7 @@ object ProxyRequest {
   def apply(requestHeader: RequestHeader): ProxyRequest = {
     ProxyRequest(
       requestHeader.method,
-      requestHeader.uri.stripPrefix("/tapi-gateway"),
+      requestHeader.uri.stripPrefix("/scapig-gateway"),
       requestHeader.queryString,
       requestHeader.headers.headers.toMap,
       requestHeader.version)

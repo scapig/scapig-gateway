@@ -11,7 +11,7 @@ import scapig.stubs.ApiStub
 
 import scalaj.http.Http
 
-class RequestAuthorizationIntegrationSpec extends BaseFeatureSpec {
+class GatewayIntegrationSpec extends BaseFeatureSpec {
 
   private val anApiDefinition = ApiDefinition("api-simulator", s"http://localhost:${ApiStub.port}",
     Seq(

@@ -22,6 +22,7 @@ class ApiDefinitionConnectorSpec extends UnitSpec with BeforeAndAfterAll with Be
   val apiDefinition = ApiDefinition("calendar-service", "calendar", Seq(apiVersion))
 
   val playApplication = new GuiceApplicationBuilder()
+    .configure("services.api-definition.host" -> "localhost")
     .configure("services.api-definition.port" -> "7001")
     .build()
   val wireMockServer = new WireMockServer(wireMockConfig().port(port))

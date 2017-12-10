@@ -25,6 +25,7 @@ class ApplicationConnectorSpec extends UnitSpec with BeforeAndAfterAll with Befo
   val api = ApiIdentifier("context", "version")
 
   val playApplication = new GuiceApplicationBuilder()
+    .configure("services.application.host" -> "localhost")
     .configure("services.application.port" -> "7001")
     .build()
   val wireMockServer = new WireMockServer(wireMockConfig().port(port))

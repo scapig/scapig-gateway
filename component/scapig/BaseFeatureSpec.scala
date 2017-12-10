@@ -20,8 +20,11 @@ with GuiceOneServerPerSuite with BeforeAndAfterEach {
 
   implicit override lazy val app: Application =  new GuiceApplicationBuilder().configure(
     "mongodb.uri" -> "mongodb://localhost:27017/scapig-gateway-it",
+    "services.api-definition.host" -> "localhost",
     "services.api-definition.port" -> ApiDefinitionStub.stub.port,
+    "services.application.host" -> "localhost",
     "services.application.port" -> ApplicationStub.stub.port,
+    "services.delegated-authority.host" -> "localhost",
     "services.delegated-authority.port" -> DelegatedAuthorityStub.stub.port
   ).build()
 

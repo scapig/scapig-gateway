@@ -13,9 +13,9 @@ import scalaj.http.Http
 
 class GatewayIntegrationSpec extends BaseFeatureSpec {
 
-  private val anApiDefinition = ApiDefinition("api-simulator", s"http://localhost:${ApiStub.port}",
+  private val anApiDefinition = ApiDefinition("api-simulator",
     Seq(
-      APIVersion("1.0", APIStatus.PUBLISHED, Seq(
+      APIVersion("1.0", APIStatus.PUBLISHED, s"http://localhost:${ApiStub.port}", Seq(
         Endpoint("userScope1", HttpMethod.GET, AuthType.USER, scope = Some("scope1")),
         Endpoint("userScope2", HttpMethod.GET, AuthType.USER, scope = Some("scope2")),
         Endpoint("application", HttpMethod.GET, AuthType.APPLICATION),

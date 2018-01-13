@@ -24,7 +24,7 @@ class EndpointServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfter
   private val apiDefinitionConnector = mock[ApiDefinitionConnector]
   private val endpointService = new EndpointService(apiDefinitionConnector)
   private val apiDefinition = ApiDefinition(
-    "api-context", "http://host.example", Seq(APIVersion("1.0", APIStatus.PUBLISHED, Seq(Endpoint("/api-endpoint", GET, NONE))))
+    "api-context", Seq(APIVersion("1.0", APIStatus.PUBLISHED, "http://host.example", Seq(Endpoint("/api-endpoint", GET, NONE))))
   )
   private val fixedTimeInMillis = 11223344
 
@@ -78,7 +78,7 @@ class EndpointServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfter
 
     "fail with MatchingResourceNotFound when a required request parameter is not in the URL" in {
 
-      val anApiDefinition = ApiDefinition("api-context", "http://host.example", Seq(APIVersion("1.0", APIStatus.PUBLISHED,
+      val anApiDefinition = ApiDefinition("api-context", Seq(APIVersion("1.0", APIStatus.PUBLISHED, "http://host.example",
         Seq(Endpoint("/api-endpoint", GET, NONE, queryParameters = Seq(Parameter("requiredParam", required = true)))))))
 
       mockApiServiceConnectorToReturn("api-context", successful(anApiDefinition))
@@ -90,7 +90,7 @@ class EndpointServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfter
 
     "succeed when all required request parameters are in the URL" in {
 
-      val anApiDefinition = ApiDefinition("api-context", "http://host.example", Seq(APIVersion("1.0", APIStatus.PUBLISHED,
+      val anApiDefinition = ApiDefinition("api-context", Seq(APIVersion("1.0", APIStatus.PUBLISHED, "http://host.example",
         Seq(Endpoint("/api-endpoint", GET, NONE, queryParameters = Seq(Parameter("requiredParam", required = true)))))))
 
       mockApiServiceConnectorToReturn("api-context", successful(anApiDefinition))
@@ -102,7 +102,7 @@ class EndpointServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfter
 
     "succeed when all request parameters in the URL are not required" in {
 
-      val anApiDefinition = ApiDefinition("api-context", "http://host.example", Seq(APIVersion("1.0", APIStatus.PUBLISHED,
+      val anApiDefinition = ApiDefinition("api-context", Seq(APIVersion("1.0", APIStatus.PUBLISHED, "http://host.example",
         Seq(Endpoint("/api-endpoint", GET, NONE, queryParameters = Seq(Parameter("requiredParam")))))))
 
       mockApiServiceConnectorToReturn("api-context", successful(anApiDefinition))

@@ -8,7 +8,7 @@ import models._
 import play.api.Logger
 import play.api.http.HeaderNames
 import play.api.mvc.{AnyContent, Request}
-import services.routing.EndpointService.{createAndLogApiRequest, findEndpoint}
+import services.routing.EndpointService.{createAndLogApiRequest, findEndpoint, findVersion}
 import utils.ProxyRequestUtils._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -22,19 +22,21 @@ class EndpointService @Inject()(apiDefinitionConnector: ApiDefinitionConnector) 
       context <- validateContext(proxyRequest)
       version <- parseVersion(proxyRequest)
       apiDefinition <- apiDefinitionConnector.fetchByContext(context)
-      apiEndpoint <- findEndpoint(proxyRequest, context, version, apiDefinition)
-    } yield createAndLogApiRequest(proxyRequest, request, context, version, apiDefinition, apiEndpoint)
+      apiVersion <- findVersion(apiDefinition, version)
+      apiEndpoint <- findEndpoint(proxyRequest, apiVersion)
+    } yield createAndLogApiRequest(proxyRequest, context, apiVersion, version, apiEndpoint)
   }
 }
 
 object EndpointService {
 
-  private def createAndLogApiRequest(proxyRequest: ProxyRequest, request: Request[AnyContent], context: String,
-                                     version: String, apiDefinition: ApiDefinition, apiEndpoint: Endpoint) = {
+  private def createAndLogApiRequest(proxyRequest: ProxyRequest, context: String,
+                                     apiVersion: APIVersion, version: String, apiEndpoint: Endpoint) = {
+
     val apiReq = ApiRequest(
       apiIdentifier = ApiIdentifier(context, version),
       authType = apiEndpoint.authType,
-      apiEndpoint = s"${apiDefinition.serviceBaseUrl}${proxyRequest.path.stripPrefix("/" + context)}",
+      apiEndpoint = s"${apiVersion.serviceBaseUrl}${proxyRequest.path.stripPrefix("/" + context)}",
       scope = apiEndpoint.scope
     )
 
@@ -43,7 +45,14 @@ object EndpointService {
     apiReq
   }
 
-  private def findEndpoint(proxyRequest: ProxyRequest, requestContext: String, requestVersion: String, apiDefinition: ApiDefinition) = {
+  private def findVersion(apiDefinition: ApiDefinition, requestVersion: String) = {
+    apiDefinition.versions.find(_.version == requestVersion) match {
+      case Some(v) => successful(v)
+      case _ => failed(ApiNotFound())
+    }
+  }
+
+  private def findEndpoint(proxyRequest: ProxyRequest, apiVersion: APIVersion) = {
 
     def filterEndpoint(apiEndpoint: Endpoint): Boolean = {
       apiEndpoint.method.toString == proxyRequest.httpMethod &&
@@ -51,13 +60,9 @@ object EndpointService {
         queryParametersMatch(proxyRequest.queryParameters, apiEndpoint.queryParameters)
     }
 
-    val apiVersion = apiDefinition.versions.find(_.version == requestVersion)
-    val apiEndpoint = apiVersion.flatMap(_.endpoints.find(filterEndpoint))
-
-    (apiVersion, apiEndpoint) match {
-      case (None, _) => failed(ApiNotFound())
-      case (_, None) => failed(MatchingResourceNotFound())
-      case (_, Some(endpoint)) => successful(endpoint)
+    apiVersion.endpoints.find(filterEndpoint) match {
+      case Some(endpoint) => successful(endpoint)
+      case None => failed(MatchingResourceNotFound())
     }
   }
 

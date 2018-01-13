@@ -2,12 +2,12 @@ package models
 
 case class ApiDefinition(
                           serviceName: String,
-                          serviceBaseUrl: String,
                           versions: Seq[APIVersion])
 
 case class APIVersion(
                        version: String,
                        status: APIStatus.Value,
+                       serviceBaseUrl: String,
                        endpoints: Seq[Endpoint])
 
 case class Endpoint(

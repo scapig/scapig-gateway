@@ -1,8 +1,6 @@
 package models
 
-case class ApiDefinition(
-                          serviceName: String,
-                          versions: Seq[APIVersion])
+case class ApiDefinition(versions: Seq[APIVersion])
 
 case class APIVersion(
                        version: String,

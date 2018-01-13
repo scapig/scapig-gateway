@@ -19,7 +19,7 @@ class ApiDefinitionConnectorSpec extends UnitSpec with BeforeAndAfterAll with Be
   val apiContext = "calendar"
   val apiEndpoint = Endpoint("/today", HttpMethod.GET, AuthType.NONE)
   val apiVersion = APIVersion("1.0", APIStatus.PROTOTYPED, "http://service-host", Seq(apiEndpoint))
-  val apiDefinition = ApiDefinition("calendar-service", Seq(apiVersion))
+  val apiDefinition = ApiDefinition(Seq(apiVersion))
 
   val playApplication = new GuiceApplicationBuilder()
     .configure("services.api-definition.host" -> "localhost")

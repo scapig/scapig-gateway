@@ -30,6 +30,7 @@ class UserRestrictedEndpointService @Inject()(delegatedAuthorityService: Delegat
       _ <- applicationService.validateSubscriptionAndRateLimit(application, apiRequest.apiIdentifier)
       _ <- scopeValidator.validate(delegatedAuthority, apiRequest.scope)
     } yield apiRequest.copy(
+      environment = Some(delegatedAuthority.environment),
       userId = Some(delegatedAuthority.userId),
       clientId = Some(delegatedAuthority.clientId))
   }

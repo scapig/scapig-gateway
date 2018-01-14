@@ -1,5 +1,6 @@
 package services.routing
 
+import models.Environment.SANDBOX
 import models.GatewayError._
 import models._
 import org.scalatest.mockito.MockitoSugar
@@ -22,8 +23,9 @@ class ApplicationRestrictedEndpointServiceSpec extends UnitSpec with MockitoSuga
 
     val apiRequest = ApiRequest(
       apiIdentifier = ApiIdentifier("context", "version"),
-      authType = AuthType.APPLICATION,
-      apiEndpoint = "http://host.example/foo/context")
+      serviceBaseUrl = "http://host.example",
+      path = "/foo",
+      authType = AuthType.APPLICATION)
 
     val basicRequest = FakeRequest(
       method = "GET",
@@ -46,7 +48,7 @@ class ApplicationRestrictedEndpointServiceSpec extends UnitSpec with MockitoSuga
       mockApplicationByClientId(applicationService, clientId, application)
       mockValidateSubscriptionAndRateLimit(applicationService, application, successful(()))
 
-      val expectedResult = apiRequest.copy(clientId = Some(clientId))
+      val expectedResult = apiRequest.copy(clientId = Some(clientId), environment = Some(Environment.PRODUCTION))
       val result = await(applicationRestrictedEndpointService.routeRequest(applicationRequestWithToken, ProxyRequest(applicationRequestWithToken), apiRequest))
 
       result shouldBe expectedResult
@@ -56,10 +58,20 @@ class ApplicationRestrictedEndpointServiceSpec extends UnitSpec with MockitoSuga
       mockApplicationByServerToken(applicationService, serverToken, application)
       mockValidateSubscriptionAndRateLimit(applicationService, application, successful(()))
 
-      val expectedResult = apiRequest.copy(clientId = Some(clientId))
+      val expectedResult = apiRequest.copy(clientId = Some(clientId), environment = Some(Environment.PRODUCTION))
       val result = await(applicationRestrictedEndpointService.routeRequest(applicationRequestWithToken, ProxyRequest(applicationRequestWithToken), apiRequest))
 
       result shouldBe expectedResult
+    }
+
+    "route a sandbox request" in new Setup {
+      val sandboxApplication = application.copy(environment = SANDBOX)
+      mockApplicationByServerToken(applicationService, serverToken, sandboxApplication)
+      mockValidateSubscriptionAndRateLimit(applicationService, sandboxApplication, successful(()))
+
+      val result = await(applicationRestrictedEndpointService.routeRequest(applicationRequestWithToken, ProxyRequest(applicationRequestWithToken), apiRequest))
+
+      result.environment shouldBe Some(SANDBOX)
     }
 
     "fail with MissingCredentials when the accessToken is missing" in new Setup {

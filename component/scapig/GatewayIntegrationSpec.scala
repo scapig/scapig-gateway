@@ -2,6 +2,9 @@ package scapig
 
 import java.util.UUID
 
+import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.client.WireMock.{equalTo, getRequestedFor, urlEqualTo, verify}
+import models.Environment.{PRODUCTION, SANDBOX}
 import models.RateLimitTier.BRONZE
 import models._
 import org.joda.time.DateTime.now
@@ -25,10 +28,10 @@ class GatewayIntegrationSpec extends BaseFeatureSpec {
   private val accessToken = "accessToken"
   private val clientId = "clientId"
 
-  private val authority = DelegatedAuthority(clientId, "userId", Environment.PRODUCTION, Token(now().plusHours(3), Set("scope1")))
+  private val authority = DelegatedAuthority(clientId, "userId", PRODUCTION, Token(now().plusHours(3), Set("scope1")))
 
   private val applicationId = UUID.randomUUID()
-  private val application = EnvironmentApplication(applicationId, "clientId", BRONZE)
+  private val application = EnvironmentApplication(applicationId, "clientId", PRODUCTION, BRONZE)
   private val apiIdentifier = ApiIdentifier("api-simulator", anApiDefinition.versions.head.version)
 
   override def beforeEach() {
@@ -250,8 +253,33 @@ class GatewayIntegrationSpec extends BaseFeatureSpec {
       assertCodeIs(httpResponse, OK)
       assertBodyIs(httpResponse, apiResponse)
     }
-  }
 
+    scenario("A SANDBOX request passing checks for a user restricted endpoint is proxied to /sandbox/PATH") {
+      val sandboxAuthority = authority.copy(environment = SANDBOX)
+
+      Given("A request to an endpoint requiring 'scope1'")
+      val httpRequest = Http(s"$serviceUrl/api-simulator/userScope1")
+        .header(ACCEPT, "application/vnd.mybusiness.1.0+json")
+        .header(AUTHORIZATION, s"Bearer $accessToken")
+
+      And("The access token matches a SANDBOX authority with 'scope1'")
+      delegatedAuthorityStub.willReturnTheAuthorityForAccessToken(accessToken, sandboxAuthority)
+
+      And("An application exists for the delegated authority")
+      applicationStub.willReturnTheApplicationForClientId(clientId, application)
+
+      And("The application is subscribed to the correct API")
+      applicationStub.willFindTheSubscriptionFor(applicationId.toString, apiIdentifier)
+
+      When("The request is sent to the gateway")
+      val httpResponse = invoke(httpRequest)
+
+      Then("The request is proxied to the SANDBOX URL")
+      assertCodeIs(httpResponse, OK)
+      assertBodyIs(httpResponse, apiResponse)
+      apiStub.stub.mock.verifyThat(getRequestedFor(urlEqualTo("/sandbox/userScope1")))
+    }
+  }
 
   feature("Application Restricted endpoint") {
 
@@ -316,6 +344,59 @@ class GatewayIntegrationSpec extends BaseFeatureSpec {
       Then("The request is proxied to the microservice")
       assertCodeIs(httpResponse, OK)
       assertBodyIs(httpResponse, apiResponse)
+    }
+
+    scenario("An application restricted request with a valid SANDBOX server token is proxied") {
+      val sandboxApplication = application.copy(environment = SANDBOX)
+
+      Given("A request with valid headers")
+      val httpRequest = Http(s"$serviceUrl/api-simulator/application")
+        .header(ACCEPT, "application/vnd.mybusiness.1.0+json")
+        .header(AUTHORIZATION, s"Bearer $accessToken")
+
+      And("The server token matches an application")
+      applicationStub.willReturnTheApplicationForServerToken(serverToken = accessToken, sandboxApplication)
+
+      And("The application is subscribed to the correct API")
+      applicationStub.willFindTheSubscriptionFor(applicationId.toString, apiIdentifier)
+
+      When("The request is sent to the gateway")
+      val httpResponse = invoke(httpRequest)
+
+      Then("The request is proxied to the SANDBOX url")
+      assertCodeIs(httpResponse, OK)
+      assertBodyIs(httpResponse, apiResponse)
+      apiStub.stub.mock.verifyThat(getRequestedFor(urlEqualTo("/sandbox/application")))
+    }
+
+    scenario("An application restricted request that matches a SANDBOX delegated authority is proxied") {
+      val sandboxAuthority = authority.copy(environment = SANDBOX)
+      val sandboxApplication = application.copy(environment = SANDBOX)
+
+      Given("A request with valid headers")
+      val httpRequest = Http(s"$serviceUrl/api-simulator/application")
+        .header(ACCEPT, "application/vnd.mybusiness.1.0+json")
+        .header(AUTHORIZATION, s"Bearer $accessToken")
+
+      And("The access token does not match applications")
+      applicationStub.willNotFindAnApplicationForServerToken(serverToken = accessToken)
+
+      And("The access token matches the authority'")
+      delegatedAuthorityStub.willReturnTheAuthorityForAccessToken(accessToken, sandboxAuthority)
+
+      And("An application exists for the delegated authority")
+      applicationStub.willReturnTheApplicationForClientId(clientId, sandboxApplication)
+
+      And("The application is subscribed to the correct API")
+      applicationStub.willFindTheSubscriptionFor(applicationId.toString, apiIdentifier)
+
+      When("The request is sent to the gateway")
+      val httpResponse = invoke(httpRequest)
+
+      Then("The request is proxied to the microservice")
+      assertCodeIs(httpResponse, OK)
+      assertBodyIs(httpResponse, apiResponse)
+      apiStub.stub.mock.verifyThat(getRequestedFor(urlEqualTo("/sandbox/application")))
     }
 
     scenario("An application restricted request, that fails with a NOT_FOUND when fetching the application " +

@@ -4,6 +4,7 @@ import java.util.UUID
 
 import config.AppContext
 import connectors.ApplicationConnector
+import models.Environment.PRODUCTION
 import models.GatewayError.{InvalidSubscription, ThrottledOut}
 import models.RateLimitTier.SILVER
 import models._
@@ -21,7 +22,7 @@ class ApplicationServiceSpec extends UnitSpec with MockitoSugar {
     val serverToken = "serverToken"
     val applicationId = UUID.randomUUID()
     val clientId = "clientId"
-    val application = EnvironmentApplication(id = applicationId, clientId = "clientId", rateLimitTier = RateLimitTier.BRONZE)
+    val application = EnvironmentApplication(id = applicationId, clientId = "clientId", environment = PRODUCTION, rateLimitTier = RateLimitTier.BRONZE)
     val bronzeRateLimit = 5
     val silverRateLimit = 10
 

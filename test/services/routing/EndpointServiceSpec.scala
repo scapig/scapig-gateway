@@ -96,7 +96,7 @@ class EndpointServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfter
 
       val actualApiRequest = await(endpointService.apiRequest(ProxyRequest(requestWithQueryString), requestWithQueryString))
 
-      apiRequest(actualApiRequest.requestId, urlWithQueryString) shouldBe actualApiRequest
+      apiRequest(actualApiRequest.requestId, endpointWithQueryString) shouldBe actualApiRequest
     }
 
     "succeed when all request parameters in the URL are not required" in {
@@ -108,7 +108,7 @@ class EndpointServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfter
 
       val actualApiRequest = await(endpointService.apiRequest(ProxyRequest(requestWithQueryString), requestWithQueryString))
 
-      apiRequest(actualApiRequest.requestId, urlWithQueryString) shouldBe actualApiRequest
+      apiRequest(actualApiRequest.requestId, endpointWithQueryString) shouldBe actualApiRequest
     }
 
     "throw an exception when proxy request does not match api definition endpoint" in {
@@ -122,13 +122,14 @@ class EndpointServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfter
 
   }
 
-  private val basicUrl = "http://host.example/api-endpoint"
-  private val urlWithQueryString = "http://host.example/api-endpoint?requiredParam=value"
+  private val basicEndpoint = "/api-endpoint"
+  private val endpointWithQueryString = "/api-endpoint?requiredParam=value"
 
-  private def apiRequest(id: UUID = UUID.randomUUID(), url: String = basicUrl) = ApiRequest(
+  private def apiRequest(id: UUID = UUID.randomUUID(), endpoint: String = basicEndpoint) = ApiRequest(
     apiIdentifier = ApiIdentifier("api-context", "1.0"),
+    serviceBaseUrl = "http://host.example",
+    path = endpoint,
     authType = NONE,
-    apiEndpoint = url,
     requestId = id
   )
 

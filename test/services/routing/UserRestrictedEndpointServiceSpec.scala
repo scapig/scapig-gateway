@@ -1,5 +1,6 @@
 package services.routing
 
+import models.Environment.SANDBOX
 import models.GatewayError._
 import models._
 import org.scalatest.mockito.MockitoSugar
@@ -22,8 +23,9 @@ class UserRestrictedEndpointServiceSpec extends UnitSpec with MockitoSugar with 
 
   private val apiRequest = ApiRequest(
     apiIdentifier = ApiIdentifier("context", "version"),
+    serviceBaseUrl = "http://host.example",
+    path = "/foo",
     authType = AuthType.USER,
-    apiEndpoint = "http://host.example/foo/context",
     scope = Some("scopeMoo"))
 
   private trait Setup {
@@ -97,12 +99,27 @@ class UserRestrictedEndpointServiceSpec extends UnitSpec with MockitoSugar with 
 
       val expectedResult = apiRequest.copy(
         userId = Some("userId"),
-        clientId = Some("clientId")
+        clientId = Some("clientId"),
+        environment = Some(Environment.PRODUCTION)
       )
 
       val result = await(userRestrictedEndpointService.routeRequest(fakeRequest, ProxyRequest(fakeRequest), apiRequest))
 
       result shouldBe expectedResult
+    }
+
+    "route a sandbox request which meets all requirements" in new Setup {
+      val sandboxApplication = application.copy(environment = SANDBOX)
+      val sandboxAuthority = validAuthority().copy(environment = SANDBOX)
+
+      mockAuthority(delegatedAuthorityService, sandboxAuthority)
+      mockScopeValidation(scopeValidator)
+      mockApplicationByClientId(applicationService, clientId, sandboxApplication)
+      mockValidateSubscriptionAndRateLimit(applicationService, sandboxApplication, successful(()))
+
+      val result = await(userRestrictedEndpointService.routeRequest(fakeRequest, ProxyRequest(fakeRequest), apiRequest))
+
+      result.environment shouldBe Some(SANDBOX)
     }
 
   }

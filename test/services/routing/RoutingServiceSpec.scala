@@ -16,21 +16,24 @@ class RoutingServiceSpec extends UnitSpec with MockitoSugar {
   private val openRequest = FakeRequest("GET", "/hello/world")
   private val openApiRequest = ApiRequest(
     apiIdentifier = ApiIdentifier("foo1", "1.0"),
-    authType = AuthType.NONE,
-    apiEndpoint = "http://api.service1//hello/world")
+    serviceBaseUrl =  "http://api.service1",
+    path = "/world",
+    authType = AuthType.NONE)
 
   private val userRequest = FakeRequest("GET", "/hello/user")
   private val userApiRequest = ApiRequest(
     apiIdentifier = ApiIdentifier("foo2", "2.0"),
+    serviceBaseUrl =  "http://api.service2",
+    path = "/user",
     authType = AuthType.USER,
-    apiEndpoint = "http://api.service2//hello/user",
     scope = Some("scope2"))
 
   private val applicationRequest = FakeRequest("GET", "/hello/application")
   private val applicationApiRequest = ApiRequest(
     apiIdentifier = ApiIdentifier("foo3", "3.0"),
-    authType = AuthType.APPLICATION,
-    apiEndpoint = "http://api.service3//hello/application")
+    serviceBaseUrl =  "http://api.service3",
+    path = "/application",
+    authType = AuthType.APPLICATION)
 
   private trait Setup {
     val endpointService = mock[EndpointService]

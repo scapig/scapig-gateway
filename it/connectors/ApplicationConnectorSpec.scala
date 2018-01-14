@@ -21,7 +21,7 @@ class ApplicationConnectorSpec extends UnitSpec with BeforeAndAfterAll with Befo
 
   val serverToken = "serverToken"
   val clientId = "clientId"
-  val application = EnvironmentApplication(UUID.randomUUID(), clientId, RateLimitTier.SILVER)
+  val application = EnvironmentApplication(UUID.randomUUID(), clientId, Environment.PRODUCTION, RateLimitTier.SILVER)
   val api = ApiIdentifier("context", "version")
 
   val playApplication = new GuiceApplicationBuilder()

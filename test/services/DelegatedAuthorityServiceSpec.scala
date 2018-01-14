@@ -28,8 +28,9 @@ class DelegatedAuthorityServiceSpec extends UnitSpec with MockitoSugar {
 
   private val apiRequest = ApiRequest(
     apiIdentifier = ApiIdentifier("context", "v1.1"),
-    authType = AuthType.USER,
-    apiEndpoint = "http://host.example/hello/world")
+    serviceBaseUrl = "http://host.example",
+    path = "/world",
+    authType = AuthType.USER)
 
   private val delegatedAuthorityConnector = mock[DelegatedAuthorityConnector]
   private val authorityService = new DelegatedAuthorityService(delegatedAuthorityConnector)

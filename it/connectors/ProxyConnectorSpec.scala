@@ -11,6 +11,7 @@ import models._
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
+import play.api.http.Status
 import play.api.http.Status.OK
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
@@ -28,8 +29,9 @@ class ProxyConnectorSpec extends UnitSpec with BeforeAndAfterAll with BeforeAndA
   val request = FakeRequest("GET", "/hello/world")
   val apiRequest = ApiRequest(
     apiIdentifier = ApiIdentifier("c", "v"),
+    serviceBaseUrl = s"http://localhost:$port",
+    path = "/world",
     authType = AuthType.USER,
-    apiEndpoint = s"http://localhost:$port/world",
     clientId = Some("clientId"))
 
   override def beforeAll {
@@ -60,6 +62,16 @@ class ProxyConnectorSpec extends UnitSpec with BeforeAndAfterAll with BeforeAndA
       val result = await(underTest.proxy(request, apiRequest))
 
       status(result) shouldBe OK
+    }
+
+    "proxy the request to the sandbox endpoint when the request is sandbox" in new Setup {
+      val sandboxRequest = apiRequest.copy(environment = Some(Environment.SANDBOX))
+
+      givenGetReturns("/sandbox/world", Status.NO_CONTENT)
+
+      val result = await(underTest.proxy(request, sandboxRequest))
+
+      status(result) shouldBe Status.NO_CONTENT
     }
 
     "proxy the body" in new Setup {

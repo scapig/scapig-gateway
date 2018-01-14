@@ -54,7 +54,7 @@ trait RoutingServicesMocks {
     when(applicationService.validateSubscriptionAndRateLimit(refEq(application), any[ApiIdentifier]())).thenReturn(result)
 
   protected def anApplication(): EnvironmentApplication =
-    EnvironmentApplication(id = UUID.randomUUID(), clientId = "clientId", rateLimitTier = BRONZE)
+    EnvironmentApplication(id = UUID.randomUUID(), clientId = "clientId", environment = Environment.PRODUCTION, rateLimitTier = BRONZE)
 
   protected def validAuthority(): DelegatedAuthority = {
     val token = Token(DateTime.now.plusMinutes(5), Set.empty)

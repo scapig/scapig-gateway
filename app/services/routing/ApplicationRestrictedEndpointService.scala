@@ -3,7 +3,7 @@ package services.routing
 import javax.inject.{Inject, Singleton}
 
 import models.GatewayError.InvalidCredentials
-import models.{ApiRequest, ApplicationNotFoundException, DelegatedAuthorityNotFoundException, ProxyRequest}
+import models._
 import play.api.Logger
 import play.api.mvc.{AnyContent, Request}
 import services.{ApplicationService, DelegatedAuthorityService}
@@ -32,7 +32,7 @@ class ApplicationRestrictedEndpointService @Inject()(delegatedAuthorityService: 
       } yield app
     }
 
-    def getApplication(accessToken: String) = {
+    def getApplication(accessToken: String): Future[EnvironmentApplication] = {
       applicationService.getByServerToken(accessToken) recoverWith {
         case e: ApplicationNotFoundException => getApplicationByAuthority(accessToken)
       }
@@ -42,7 +42,9 @@ class ApplicationRestrictedEndpointService @Inject()(delegatedAuthorityService: 
       accessToken <- proxyRequest.accessToken(request, apiRequest)
       app <- getApplication(accessToken)
       _ <- applicationService.validateSubscriptionAndRateLimit(app, apiRequest.apiIdentifier)
-    } yield apiRequest.copy(clientId = Some(app.clientId))
+    } yield apiRequest.copy(
+      environment = Some(app.environment),
+      clientId = Some(app.clientId))
   }
 
 }

@@ -1,7 +1,5 @@
 package services
 
-import java.util.UUID
-
 import connectors.ProxyConnector
 import models.{ApiIdentifier, ApiRequest, AuthType}
 import org.mockito.BDDMockito.given
@@ -19,8 +17,9 @@ class ProxyServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEac
     val request = FakeRequest("GET", "/hello/world")
     val apiRequest = ApiRequest(
       apiIdentifier = mock[ApiIdentifier],
+      serviceBaseUrl = "http://hello-world.service",
+      path = "/world",
       authType = AuthType.USER,
-      apiEndpoint = "http://hello-world.service/hello/world",
       scope = Some("scope"))
 
     val proxyConnector = mock[ProxyConnector]

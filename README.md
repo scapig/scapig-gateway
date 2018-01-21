@@ -11,7 +11,14 @@ sbt universal:package-zip-tarball
 docker build -t scapig-gateway .
 ``
 
+## Publishing
+``
+docker tag scapig-gateway scapig/scapig-gateway:VERSION
+docker login
+docker push scapig/scapig-gateway:VERSION
+``
+
 ## Running
 ``
-docker run -p8030:8030 -i -a stdin -a stdout -a stderr scapig-gateway sh start-docker.sh
+docker run -p9018:9018 -d scapig/scapig-gateway:VERSION
 ``

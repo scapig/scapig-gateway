@@ -13,12 +13,12 @@ docker build -t scapig-gateway .
 
 ## Publishing
 ``
-docker tag scapig-gateway scapig/scapig-gateway:VERSION
+docker tag scapig-gateway scapig/scapig-gateway
 docker login
-docker push scapig/scapig-gateway:VERSION
+docker push scapig/scapig-gateway
 ``
 
 ## Running
 ``
-docker run -p9018:9018 -d scapig/scapig-gateway:VERSION
+docker run -p9018:9018 -d scapig/scapig-gateway
 ``

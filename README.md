@@ -1,5 +1,7 @@
 ## scapig-gateway
 
+This is the API Gateway of the Scapig API Platform (http://www.scapig.com).
+
 ## Building
 ``
 sbt clean test it:test component:test
